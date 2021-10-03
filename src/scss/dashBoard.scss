@@ -94,6 +94,8 @@ html {
 		position: relative;
 		height: 100vh;
 		width: 50vw;
+	  padding-left: 9%;
+
 	}
 
 	.pc__table--right {
@@ -111,8 +113,15 @@ html {
 		p {
 			display: block;
 		}
+		&__title{
+			font-weight: normal;
+			font-size: 50px;
+			line-height: 58px;
+			color: #454545;
+			text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+		}
 		&__subtitle {
-			// display: inline;
 			font-weight: normal;
 			font-size: 30px;
 			line-height: 58px;

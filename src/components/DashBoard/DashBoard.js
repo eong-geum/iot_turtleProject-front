@@ -16,7 +16,7 @@ const DashBoard = (props) => {
 		<div className="DashBoard">
 			<div className="pc__table--left">
 				<span className="header">
-					<p> NN 월 NN 일 </p>
+					<p className="header__title"> NN 월 NN 일 </p>
 					<p className="header__subtitle">
 						{' '}
 						터틀과 함께 거북목에서 벗어나볼까요?
