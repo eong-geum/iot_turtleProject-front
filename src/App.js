@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-globals */
 import React, { useEffect } from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
@@ -13,42 +12,52 @@ import { onMessage, getMessaging, getToken } from 'firebase/messaging';
 
 function App() {
 	useEffect(() => {
+		if (!('Notification' in window)) {
+			alert('알람 기능을 사용할 수 없습니다.');
+		} else if (Notification.permission === 'granted') {
+			console.log('granted');
+		} else if (Notification.permission !== 'denied') {
+			Notification.requestPermission().then(function (permission) {
+				if (permission === 'granted') {
+					console.log('사용자가 알람 권한을 허용 하였습니다.');
+				}
+			});
+		}
+
 		initializeApp(firebaseApp);
 		const messaging = getMessaging();
 
+		// 토큰 확인
 		getToken(messaging, {
 			vapidKey: vapidKey,
 		})
 			.then((currentToken) => {
 				if (currentToken) {
-					// Send the token to your server and update the UI if necessary
-					// ...
 					console.log(currentToken);
 				} else {
-					// Show permission request UI
 					console.log(
 						'No registration token available. Request permission to generate one.',
 					);
-					// ...
 				}
 			})
 			.catch((err) => {
 				console.log('An error occurred while retrieving token. ', err);
-				// ...
 			});
 
-		// backgrondMessage는 sw 에서 처리합니다.
-
+		// backgroundMessage는 sw 에서 처리합니다.
 		onMessage(messaging, (payload) => {
 			console.log('Message received. ', payload);
-			var title = payload.notification.title;
-			var options = {
-				body: payload.notification.body,
-				icon: payload.notification.icon,
-			};
-			var notification = new Notification(title, options);
 
-			console.log('포그라운드 메세지:', options);
+			const title = payload.notification.title;
+			const options = {
+				body: payload.notification.body,
+			};
+
+			const notificationTab = new Notification(title, options);
+			notificationTab.onclick = function (event) {
+				event.preventDefault(); // prevent the browser from focusing the Notification's tab
+				window.open('http://localhost:3000/stretching');
+			};
 		});
 	}, []);
 

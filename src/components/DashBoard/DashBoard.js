@@ -1,5 +1,5 @@
-/* eslint-disable no-unused-expressions */
-// import titleImg from '../../assets/loadingTitle.png';
+/* eslint-disable */
+
 import React, { useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 
