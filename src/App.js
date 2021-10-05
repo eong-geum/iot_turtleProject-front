@@ -20,8 +20,8 @@ import { getPermission } from './common/getPermission';
 function App() {
 	const initialState = {
 		isTurtle: false,
-		detectedCount: localStorage.getItem('detectedCount')
-			? localStorage.getItem('detectedCount')
+		detectedCount: JSON.parse(localStorage.getItem('detectedCount'))
+			? JSON.parse(localStorage.getItem('detectedCount'))
 			: 0,
 	};
 
@@ -29,7 +29,10 @@ function App() {
 		switch (action.type) {
 			case 'detectTurtle':
 				draft.isTurtle = true;
-				localStorage.setItem('detectedCount', (draft.detectedCount += 1));
+				localStorage.setItem(
+					'detectedCount',
+					JSON.stringify((draft.detectedCount += 1)),
+				);
 				console.log('reducer:', draft.isTurtle);
 				break;
 			case 'finishStretch':
