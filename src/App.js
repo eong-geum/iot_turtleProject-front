@@ -1,29 +1,46 @@
-import React, { useEffect } from 'react';
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable default-case */
+import React, { useEffect, useReducer, useContext } from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { useImmerReducer } from 'use-immer';
+
+import StateContext from './StateContext';
+import DispatchContext from './DispatchContext';
+
+import { firebaseApp, vapidKey } from './firebase/firebaseConfig';
+import { initializeApp } from 'firebase/app';
+import { onMessage, getMessaging, getToken } from 'firebase/messaging';
 
 import Loading from './components/Loading/Loading';
 import DashBoard from './components/DashBoard/DashBoard';
 import Detect from './components/Detect/Detect';
 import Stretching from './components/Stretching/Stretching';
-import { firebaseApp, vapidKey } from './firebase/firebaseConfig';
-
-import { initializeApp } from 'firebase/app';
-import { onMessage, getMessaging, getToken } from 'firebase/messaging';
+import { getPermission } from './common/getPermission';
 
 function App() {
-	useEffect(() => {
-		if (!('Notification' in window)) {
-			alert('알람 기능을 사용할 수 없습니다.');
-		} else if (Notification.permission === 'granted') {
-			console.log('granted');
-		} else if (Notification.permission !== 'denied') {
-			Notification.requestPermission().then(function (permission) {
-				if (permission === 'granted') {
-					console.log('사용자가 알람 권한을 허용 하였습니다.');
-				}
-			});
-		}
+	const initialState = {
+		isTurtle: false,
+		detectedCount: localStorage.getItem('detectedCount')
+			? localStorage.getItem('detectedCount')
+			: 0,
+	};
 
+	function ourReducer(draft, action) {
+		switch (action.type) {
+			case 'detectTurtle':
+				draft.isTurtle = true;
+				localStorage.setItem('detectedCount', (draft.detectedCount += 1));
+				console.log('reducer:', draft.isTurtle);
+				break;
+			case 'finishStretch':
+				draft.isTurtle = false;
+				console.log('is finished?:', draft.isTurtle);
+				break;
+		}
+	}
+	const [state, dispatch] = useImmerReducer(ourReducer, initialState);
+
+	const useFirebaseMessage = () => {
 		initializeApp(firebaseApp);
 		const messaging = getMessaging();
 
@@ -53,31 +70,36 @@ function App() {
 				body: payload.notification.body,
 			};
 
-			const notificationTab = new Notification(title, options);
-			notificationTab.onclick = function (event) {
-				event.preventDefault(); // prevent the browser from focusing the Notification's tab
-				window.open('http://localhost:3000/stretching');
-			};
+			dispatch({ type: 'detectTurtle' });
 		});
+	};
+
+	useEffect(() => {
+		getPermission();
+		useFirebaseMessage();
 	}, []);
 
 	return (
-		<BrowserRouter>
-			<Switch>
-				<Route path="/" exact>
-					<Loading />
-				</Route>
-				<Route path="/home" exact>
-					<DashBoard />
-				</Route>
-				<Route path="/detect" exact>
-					<Detect />
-				</Route>
-				<Route path="/stretching" exact>
-					<Stretching />
-				</Route>
-			</Switch>
-		</BrowserRouter>
+		<StateContext.Provider value={state}>
+			<DispatchContext.Provider value={dispatch}>
+				<BrowserRouter>
+					<Switch>
+						<Route path="/" exact>
+							<Loading />
+						</Route>
+						<Route path="/home" exact>
+							<DashBoard />
+						</Route>
+						<Route path="/detect" exact>
+							<Detect />
+						</Route>
+						<Route path="/stretching" exact>
+							<Stretching />
+						</Route>
+					</Switch>
+				</BrowserRouter>
+			</DispatchContext.Provider>
+		</StateContext.Provider>
 	);
 }
 
