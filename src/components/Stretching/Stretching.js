@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { withRouter } from 'react-router-dom';
+
+import StateContext from '../../StateContext';
+import DispatchContext from '../../DispatchContext';
 
 import turtleImg from '../../assets/detectTutle.png';
 import calendar from '../../assets/calendar.png';
@@ -7,6 +10,9 @@ import calendar from '../../assets/calendar.png';
 import '../../css/stretching.css';
 
 const Stretching = (props) => {
+	const appState = useContext(StateContext);
+	const appDispatch = useContext(DispatchContext);
+
 	const [stretchState, setStretchState] = useState('start');
 
 	const buttonUi = () => {
@@ -25,9 +31,15 @@ const Stretching = (props) => {
 		} else if (stretchState === 'stop') {
 			setStretchState('close');
 		} else {
-			props.history.goBack();
+			appDispatch({ type: 'finishStretch' });
 		}
 	};
+
+	useEffect(() => {
+		if (!appState.isTurtle) {
+			props.history.push('/home');
+		}
+	}, [appState.isTurtle]);
 
 	return (
 		<div className="stretching-page">

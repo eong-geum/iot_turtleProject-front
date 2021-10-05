@@ -1,7 +1,10 @@
 /* eslint-disable */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { Link, withRouter } from 'react-router-dom';
+
+import StateContext from '../../StateContext';
+import DispatchContext from '../../DispatchContext';
 
 import turtleImg from '../../assets/turtleGroup.png';
 import calendar from '../../assets/calendar.png';
@@ -12,6 +15,15 @@ import Stretching from '../Stretching/Stretching';
 import '../../css/dashBoard.css';
 
 const DashBoard = (props) => {
+	const appState = useContext(StateContext);
+	const appDispatch = useContext(DispatchContext);
+
+	useEffect(() => {
+		if (appState.isTurtle) {
+			props.history.push('/detect');
+		}
+	}, [appState.isTurtle]);
+
 	return (
 		<div className="DashBoard">
 			<div className="pc__table--left">
@@ -37,20 +49,12 @@ const DashBoard = (props) => {
 
 					<span className="content-circle__group content-circle__group--right">
 						<p className="content-circle__title">거북목 감지</p>
-						<p
-							className="content-circle__content"
-							onClick={() => {
-								props.history.push('/stretching');
-							}}
-						>
-							10
+						<p className="content-circle__content">
+							{appState.detectedCount}회
 						</p>
 					</span>
 
-					<span className="content-circle__group content-circle__group--bottom">
-						{/* <p className="content-circle__title">거북목 감지</p> */}
-						{/* <p className="content-circle__content">10</p> */}
-					</span>
+					<span className="content-circle__group content-circle__group--bottom"></span>
 				</div>
 			</div>
 		</div>
