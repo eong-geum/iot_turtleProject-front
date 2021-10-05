@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import React, { useEffect } from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
@@ -36,6 +37,8 @@ function App() {
 				// ...
 			});
 
+		// backgrondMessage는 sw 에서 처리합니다.
+
 		onMessage(messaging, (payload) => {
 			console.log('Message received. ', payload);
 			var title = payload.notification.title;
@@ -45,8 +48,7 @@ function App() {
 			};
 			var notification = new Notification(title, options);
 
-			console.log(options);
-			// ...
+			console.log('포그라운드 메세지:', options);
 		});
 	}, []);
 

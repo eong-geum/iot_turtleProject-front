@@ -40,7 +40,7 @@ const DashBoard = (props) => {
 						<p
 							className="content-circle__content"
 							onClick={() => {
-								props.history.push('/stretching'), 3000;
+								props.history.push('/stretching');
 							}}
 						>
 							10
