@@ -15,7 +15,7 @@ const Stretching = (props) => {
 
 	const [stretchState, setStretchState] = useState('start');
 
-	const buttonUi = () => {
+	const buttonUI = () => {
 		if (stretchState === 'start') {
 			return 'start';
 		} else if (stretchState === 'stop') {
@@ -55,7 +55,7 @@ const Stretching = (props) => {
 						handleStretchButton();
 					}}
 				>
-					{buttonUi()}
+					{buttonUI()}
 				</div>
 			</>
 		</div>

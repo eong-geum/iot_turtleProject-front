@@ -24,4 +24,12 @@
 		font-weight: bold;
 		color: #ffffff;
 	}
+	&__goToStretch {
+		cursor: pointer;
+		font-weight: bold;
+		text-shadow: 0px 10px 10px #dedede;
+		padding-bottom: 60px;
+		color: darkcyan;
+		font-size: 28px;
+	}
 }
