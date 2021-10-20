@@ -13,47 +13,51 @@ const Stretching = (props) => {
 	const appState = useContext(StateContext);
 	const appDispatch = useContext(DispatchContext);
 
-	const [stretchState, setStretchState] = useState('start');
+	const [stretchState, setStretchState] = useState('stop');
 
-	const buttonUI = () => {
-		if (stretchState === 'start') {
-			return 'start';
-		} else if (stretchState === 'stop') {
+	const buttonUI = (props) => {
+		if (stretchState === 'stop') {
 			return 'stop';
 		} else {
 			return 'close';
 		}
 	};
 
+	const [seconds, setSeconds] = useState(30);
+
+	useEffect(() => {
+		const countdown = setInterval(() => {
+			if (parseInt(seconds) > 0) {
+				setSeconds(parseInt(seconds) - 1);
+			}
+		}, 1000);
+
+		if ( stretchState === "close") {
+			 clearInterval(countdown) 
+		}
+		return () => clearInterval(countdown);
+	}, [seconds]);
+
 	const handleStretchButton = () => {
-		if (stretchState === 'start') {
-			setStretchState('stop');
-		} else if (stretchState === 'stop') {
+		if (stretchState === 'stop') {
 			setStretchState('close');
 		} else {
 			appDispatch({ type: 'finishStretch' });
+			props.history.push('/home')
 		}
 	};
-
-	useEffect(() => {
-		if (!appState.isTurtle) {
-			props.history.push('/home');
-		}
-	}, [appState.isTurtle]);
 
 	return (
 		<div className="stretching-page">
 			<>
 				<h2>30초만 스트레칭</h2>
 				<div className="count-circle">
-					<p className="count-number"> 30 : 00 </p>
+					<p className="count-number"> {seconds} </p>
 				</div>
 
 				<div
 					className="stretching__button"
-					onClick={() => {
-						handleStretchButton();
-					}}
+					onClick={() => handleStretchButton()}
 				>
 					{buttonUI()}
 				</div>

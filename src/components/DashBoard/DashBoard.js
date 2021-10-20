@@ -24,11 +24,18 @@ const DashBoard = (props) => {
 		}
 	}, [appState.isTurtle]);
 
+	const month = new Date().getMonth();
+
+	const day = new Date().getDay();
+
 	return (
 		<div className="DashBoard">
 			<div className="pc__table--left">
 				<span className="header">
-					<p className="header__title"> NN 월 NN 일 </p>
+					<p className="header__title">
+						{' '}
+						{month}월 {day}일{' '}
+					</p>
 					<p className="header__subtitle">
 						{' '}
 						터틀과 함께 거북목에서 벗어나볼까요?
