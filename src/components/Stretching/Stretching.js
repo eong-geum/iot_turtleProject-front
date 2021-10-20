@@ -30,6 +30,10 @@ const Stretching = (props) => {
 			if (parseInt(seconds) > 0) {
 				setSeconds(parseInt(seconds) - 1);
 			}
+			else{
+				appDispatch({ type: 'finishStretch' });
+				props.history.push('/home')
+			}
 		}, 1000);
 
 		if ( stretchState === "close") {
