@@ -9,14 +9,13 @@
     z-index: 90;
   }
   .modalInner {
-    background: -webkit-gradient(linear, left top, left bottom, from(rgba(142, 226, 207, 0.2)), to(rgba(23, 241, 255, 0.2))), #8ee2cf;
-    background: linear-gradient(180deg, rgba(142, 226, 207, 0.2) 0%, rgba(23, 241, 255, 0.2) 100%), #8ee2cf;
+   
     position: fixed;
     top: 50%;
     left: 50%;
     -webkit-transform: translate(-50%, -50%);
             transform: translate(-50%, -50%);
-    z-index: 100;
+    z-index: 999;
   }
 }
 

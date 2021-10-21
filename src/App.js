@@ -19,14 +19,29 @@ import { getPermission } from './common/getPermission';
 
 function App() {
 	const initialState = {
+		todayDate: new Date(),
+		isModalClose: true,
 		isTurtle: false,
 		detectedCount: JSON.parse(localStorage.getItem('detectedCount'))
 			? JSON.parse(localStorage.getItem('detectedCount'))
 			: 0,
+		
 	};
 
 	function ourReducer(draft, action) {
 		switch (action.type) {
+			case 'handleDate':
+				draft.todayDate = action.todayDate;
+				console.log('apidate',draft.todayDate)
+				break;
+			case 'closeModal':
+			 draft.isModalClose  = true;
+			 console.log('close',draft.isModalClose)
+			 break;
+			case 'openModal':
+				draft.isModalClose =false;
+			  console.log('open',draft.isModalClose)
+				break;
 			case 'detectTurtle':
 				draft.isTurtle = true;
 				localStorage.setItem(
@@ -88,9 +103,6 @@ function App() {
 				<BrowserRouter>
 					<Switch>
 						<Route path="/" exact>
-							<Loading />
-						</Route>
-						<Route path="/home" exact>
 							<DashBoard />
 						</Route>
 						<Route path="/detect" exact>

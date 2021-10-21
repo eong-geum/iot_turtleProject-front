@@ -32,7 +32,7 @@ const Stretching = (props) => {
 			}
 			else{
 				appDispatch({ type: 'finishStretch' });
-				props.history.push('/home')
+				props.history.push('/')
 			}
 		}, 1000);
 
@@ -47,7 +47,7 @@ const Stretching = (props) => {
 			setStretchState('close');
 		} else {
 			appDispatch({ type: 'finishStretch' });
-			props.history.push('/home')
+			props.history.push('/')
 		}
 	};
 
