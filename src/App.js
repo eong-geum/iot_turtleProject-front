@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable default-case */
-import React, { useEffect, useReducer, useContext } from 'react';
+import React, { useEffect, useReducer, useContext , useState , useRef} from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { useImmerReducer } from 'use-immer';
 
@@ -9,7 +9,7 @@ import DispatchContext from './DispatchContext';
 
 import { firebaseApp, vapidKey } from './firebase/firebaseConfig';
 import { initializeApp  } from 'firebase/app';
-import { getDatabase } from "firebase/database";
+import {  getDatabase, ref, onValue } from "firebase/database";
 import { onMessage, getMessaging, getToken } from 'firebase/messaging';
 
 import Loading from './components/Loading/Loading';
@@ -57,9 +57,11 @@ function App() {
 				break;
 		}
 	}
-	const [state, dispatch] = useImmerReducer(ourReducer, initialState);
-	const app = initializeApp(firebaseApp);
 
+	const [state, dispatch] = useImmerReducer(ourReducer, initialState);
+
+
+	const app = initializeApp(firebaseApp);
 	const useFirebaseMessage = () => {
 		const messaging = getMessaging();
 
@@ -94,14 +96,21 @@ function App() {
 	};
 
 	const database = getDatabase(app);
-	// dataBase.ref('/')...
-
-
+	
+	const starCountRef = ref(database);
+	onValue(starCountRef, (snapshot) => {
+		const data = snapshot.val();
+		console.log('데이터' ,data);
+	});
 
 	useEffect(() => {
 		getPermission();
 		useFirebaseMessage();
 	}, []);
+
+
+ 
+
 
 	return (
 		<StateContext.Provider value={state}>
