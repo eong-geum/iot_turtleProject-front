@@ -8,7 +8,8 @@ import StateContext from './StateContext';
 import DispatchContext from './DispatchContext';
 
 import { firebaseApp, vapidKey } from './firebase/firebaseConfig';
-import { initializeApp } from 'firebase/app';
+import { initializeApp  } from 'firebase/app';
+import { getDatabase } from "firebase/database";
 import { onMessage, getMessaging, getToken } from 'firebase/messaging';
 
 import Loading from './components/Loading/Loading';
@@ -57,9 +58,9 @@ function App() {
 		}
 	}
 	const [state, dispatch] = useImmerReducer(ourReducer, initialState);
+	const app = initializeApp(firebaseApp);
 
 	const useFirebaseMessage = () => {
-		initializeApp(firebaseApp);
 		const messaging = getMessaging();
 
 		// 토큰 확인
@@ -91,6 +92,11 @@ function App() {
 			dispatch({ type: 'detectTurtle' });
 		});
 	};
+
+	const database = getDatabase(app);
+	// dataBase.ref('/')...
+
+
 
 	useEffect(() => {
 		getPermission();
