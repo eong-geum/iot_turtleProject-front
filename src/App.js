@@ -78,10 +78,13 @@ function App() {
 	let getDB = '';
 	onValue(starCountRef, (snapshot) => {
 		getDB = snapshot.val();
+		console.log('최최최종 ', getDB);
 		return getDB;
 	});
 
 	const initialState = {
+		// TODO : 임시로 userName 처리 해둠
+		userName: 'kangho',
 		todayDate: new Date(),
 		isModalClose: true,
 		isTurtle: false,
@@ -97,8 +100,8 @@ function App() {
 				break;
 
 			case 'handleDB':
-				draft.getFirebaseDB = getDB.countSample.idSample[date]
-					? getDB.countSample.idSample[date]
+				draft.getFirebaseDB = getDB.count[draft.userName][date]
+					? getDB.count[draft.userName][date].count
 					: 0;
 				break;
 
