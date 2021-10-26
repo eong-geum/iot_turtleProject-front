@@ -54,8 +54,14 @@ const DashBoard = (props) => {
 						/>
 					</span>
 					<p className="header__subtitle">
-						{' '}
-						터틀과 함께 거북목에서 벗어나볼까요?
+						터틀과 함께 거북목에서 벗어나볼까요?{' '}
+					</p>
+					<p
+						className="header__subtitle"
+						style={{ textDecorationLine: 'underline' }}
+						onClick={() => props.history.push('/stretching')}
+					>
+						스트레칭 하러 가기 🧘‍♀️
 					</p>
 
 					{!appState.isModalClose && (

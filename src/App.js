@@ -78,6 +78,7 @@ function App() {
 	let getDB = '';
 	onValue(starCountRef, (snapshot) => {
 		getDB = snapshot.val();
+		return getDB;
 	});
 
 	const initialState = {
