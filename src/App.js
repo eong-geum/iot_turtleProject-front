@@ -54,7 +54,9 @@ function App() {
 			const options = {
 				body: payload.notification.body,
 			};
+
 			dispatch({ type: 'detectTurtle' });
+			window.location.href = '/stretching';
 		});
 	};
 
@@ -78,8 +80,6 @@ function App() {
 	let getDB = '';
 	onValue(starCountRef, (snapshot) => {
 		getDB = snapshot.val();
-		// dispatch({ type: 'getTodayCount' });
-		return getDB;
 	});
 
 	const initialState = {
@@ -88,14 +88,20 @@ function App() {
 		todayDate: new Date(),
 		isModalClose: true,
 		isTurtle: false,
-		todayCount: getDB ? getDB : 0,
-		compareCount: getDB ? getDB : 0,
+		todayCount: getDB,
+		compareCount: getDB,
+		countList: [],
 	};
 
 	function ourReducer(draft, action) {
 		const date = toStringByFormatting(draft.todayDate);
 
 		switch (action.type) {
+			case 'getCountList':
+				draft.countList = getDB.count[draft.userName];
+				console.log(draft.countList);
+				break;
+
 			case 'handleDate':
 				draft.todayDate = action.todayDate;
 				break;

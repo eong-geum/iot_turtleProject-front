@@ -7,6 +7,10 @@ import StateContext from '../../StateContext';
 import DispatchContext from '../../DispatchContext';
 import Calendar from 'react-calendar';
 
+import { firebaseApp, vapidKey } from '../../firebase/firebaseConfig';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, onValue } from 'firebase/database';
+
 import turtleImg from '../../assets/turtleGroup.png';
 import calendar from '../../assets/calendar.png';
 
@@ -17,8 +21,34 @@ import TurtleCalendar from './TurtleCalendar';
 import '../../css/dashBoard.css';
 
 const DashBoard = (props) => {
+	const app = initializeApp(firebaseApp);
+
+	const database = getDatabase(app);
+	const starCountRef = ref(database);
+
+	let getDB = '';
+	onValue(starCountRef, (snapshot) => {
+		getDB = snapshot.val();
+		return getDB;
+	});
+
+	function formatLeftZero(value) {
+		if (value >= 10) {
+			return value;
+		}
+		return `0${value}`;
+	}
+	function toStringByFormatting(source, delimiter = '-') {
+		const year = source.getFullYear();
+		const month = formatLeftZero(source.getMonth() + 1);
+		const day = formatLeftZero(source.getDate());
+		return [year, month, day].join(delimiter);
+	}
+
 	const appState = useContext(StateContext);
 	const appDispatch = useContext(DispatchContext);
+
+	// useEffect(appDispatch({ type: 'getTodayCount' }), []);
 
 	// TODO : date 로직 분리
 	const [date, setDate] = useState(new Date());
@@ -27,13 +57,9 @@ const DashBoard = (props) => {
 		appDispatch({ type: 'handleDate', todayDate: date });
 		appDispatch({ type: 'getTodayCount' });
 		appDispatch({ type: 'getCompareCount' });
+		appDispatch({ type: 'getCountList' });
+		// Object.keys(appState.countList).map((e) => console.log(e));
 	};
-
-	useEffect(() => {
-		// if (appState.isTurtle) {
-		// 	props.history.push('/detect');
-		// }
-	}, []);
 
 	const compareUI = () => {
 		let abs = 1;
@@ -83,7 +109,9 @@ const DashBoard = (props) => {
 						<img
 							className="header__calendar"
 							src={calendar}
-							onClick={() => appDispatch({ type: 'openModal' })}
+							onClick={() => {
+								appDispatch({ type: 'openModal' });
+							}}
 						/>
 					</span>
 					<p className="header__subtitle">
@@ -98,7 +126,12 @@ const DashBoard = (props) => {
 					</p>
 
 					{!appState.isModalClose && (
-						<TurtleCalendar value={date} onChange={onChange} />
+						<TurtleCalendar
+							test={date}
+							value={toStringByFormatting(date)}
+							onChange={onChange}
+							countList={appState.countList}
+						/>
 					)}
 				</span>
 				<img className="turtle-img" src={turtleImg} />
