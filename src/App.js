@@ -78,7 +78,7 @@ function App() {
 	let getDB = '';
 	onValue(starCountRef, (snapshot) => {
 		getDB = snapshot.val();
-		console.log('최최최종 ', getDB);
+		// dispatch({ type: 'getTodayCount' });
 		return getDB;
 	});
 
@@ -88,7 +88,8 @@ function App() {
 		todayDate: new Date(),
 		isModalClose: true,
 		isTurtle: false,
-		getFirebaseDB: getDB ? getDB : 0,
+		todayCount: getDB ? getDB : 0,
+		compareCount: getDB ? getDB : 0,
 	};
 
 	function ourReducer(draft, action) {
@@ -99,8 +100,20 @@ function App() {
 				draft.todayDate = action.todayDate;
 				break;
 
-			case 'handleDB':
-				draft.getFirebaseDB = getDB.count[draft.userName][date]
+			case 'getCompareCount':
+				const yesterday = toStringByFormatting(
+					new Date(new Date().setDate(new Date(draft.todayDate).getDate() - 1)),
+				);
+				draft.compareCount =
+					getDB.count[draft.userName][date] &&
+					getDB.count[draft.userName][yesterday]
+						? getDB.count[draft.userName][date].count -
+						  getDB.count[draft.userName][yesterday].count
+						: 0;
+				break;
+
+			case 'getTodayCount':
+				draft.todayCount = getDB.count[draft.userName][date]
 					? getDB.count[draft.userName][date].count
 					: 0;
 				break;

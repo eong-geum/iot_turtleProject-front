@@ -24,9 +24,9 @@ const DashBoard = (props) => {
 	const [date, setDate] = useState(new Date());
 	const onChange = (date) => {
 		setDate(date);
-
 		appDispatch({ type: 'handleDate', todayDate: date });
-		appDispatch({ type: 'handleDB' });
+		appDispatch({ type: 'getTodayCount' });
+		appDispatch({ type: 'getCompareCount' });
 	};
 
 	useEffect(() => {
@@ -34,6 +34,39 @@ const DashBoard = (props) => {
 		// 	props.history.push('/detect');
 		// }
 	}, []);
+
+	const compareUI = () => {
+		let abs = 1;
+		let more = '';
+		let imo = '';
+
+		if (appState.compareCount === 0) {
+			return (
+				<span className="content-circle__group content-circle__group--left">
+					<p className="content-circle__title">비교 데이터가</p>
+					<p className="content-circle__title">쌓이지 않았어요 🐢</p>
+				</span>
+			);
+		} else if (appState.compareCount < 0) {
+			abs = -1;
+			more = '덜';
+			imo = '🎉';
+		} else {
+			more = '더';
+			imo = '😢';
+		}
+		return (
+			<span className="content-circle__group content-circle__group--left">
+				<p className="content-circle__title">어제보다</p>
+				<p className="content-circle__content" style={{ fontSize: '45px' }}>
+					{appState.compareCount * abs}회
+				</p>
+				<p className="content-circle__title">
+					{more} 감지되었어요 {imo}
+				</p>
+			</span>
+		);
+	};
 
 	const getDateTitle = () => {
 		let month = appState.todayDate.getMonth() + 1;
@@ -76,13 +109,11 @@ const DashBoard = (props) => {
 			</div>
 			<div className="pc__table--right">
 				<div className="content-circle__container">
-					<span className="content-circle__group content-circle__group--left"></span>
+					{compareUI()}
 
 					<span className="content-circle__group content-circle__group--right">
 						<p className="content-circle__title">거북목 감지</p>
-						<p className="content-circle__content">
-							{appState.getFirebaseDB}회
-						</p>
+						<p className="content-circle__content">{appState.todayCount}회</p>
 					</span>
 
 					<span className="content-circle__group content-circle__group--bottom"></span>
