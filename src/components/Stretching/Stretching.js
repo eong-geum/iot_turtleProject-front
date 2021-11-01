@@ -18,36 +18,40 @@ const Stretching = (props) => {
 	const buttonUI = (props) => {
 		if (stretchState === 'stop') {
 			return 'stop';
-		} else {
+		} else if (stretchState === 'stop') {
 			return 'close';
+		} else {
+			return 'play';
 		}
 	};
 
 	const [seconds, setSeconds] = useState(30);
 
 	useEffect(() => {
-		const countdown = setInterval(() => {
+		let countdown = setInterval(() => {
 			if (parseInt(seconds) > 0) {
 				setSeconds(parseInt(seconds) - 1);
-			}
-			else{
+			} else {
 				appDispatch({ type: 'finishStretch' });
-				props.history.push('/')
+				props.history.push('/');
 			}
 		}, 1000);
 
-		if ( stretchState === "close") {
-			 clearInterval(countdown) 
+		if (stretchState === 'pause') {
+			clearInterval(countdown);
 		}
 		return () => clearInterval(countdown);
 	}, [seconds]);
 
 	const handleStretchButton = () => {
 		if (stretchState === 'stop') {
-			setStretchState('close');
+			setStretchState('pause');
+		} else if (stretchState === 'pause') {
+			setSeconds(parseInt(seconds) - 1);
+			setStretchState('play');
 		} else {
 			appDispatch({ type: 'finishStretch' });
-			props.history.push('/')
+			props.history.push('/');
 		}
 	};
 
@@ -59,11 +63,19 @@ const Stretching = (props) => {
 					<p className="count-number"> {seconds} </p>
 				</div>
 
-				<div
-					className="stretching__button"
-					onClick={() => handleStretchButton()}
-				>
-					{buttonUI()}
+				<div>
+					<p
+						className="stretching__button"
+						onClick={() => handleStretchButton()}
+					>
+						{buttonUI()}
+					</p>
+					<p
+						className="stretching__button"
+						onClick={() => props.history.push('/')}
+					>
+						close
+					</p>
 				</div>
 			</>
 		</div>

@@ -108,8 +108,16 @@ function App() {
 
 			case 'getCompareCount':
 				const yesterday = toStringByFormatting(
-					new Date(new Date().setDate(new Date(draft.todayDate).getDate() - 1)),
+					new Date(
+						new Date(draft.todayDate).setDate(
+							new Date(draft.todayDate).getDate() - 1,
+						),
+					),
 				);
+
+				console.log('오늘', draft.todayDate);
+				console.log('어제', yesterday);
+				console.log('xㅔ스으', getDB.count[draft.userName][yesterday]);
 				draft.compareCount =
 					getDB.count[draft.userName][date] &&
 					getDB.count[draft.userName][yesterday]
