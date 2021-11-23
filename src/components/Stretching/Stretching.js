@@ -18,9 +18,9 @@ const Stretching = (props) => {
 
 	const buttonUI = (props) => {
 		if (stretchState === 'stop') {
-			return 'stop';
-		} else if (stretchState === 'stop') {
-			return 'close';
+			return 'pause';
+		} else if (stretchState === 'play') {
+			return 'pause';
 		} else {
 			return 'play';
 		}
@@ -50,9 +50,11 @@ const Stretching = (props) => {
 		} else if (stretchState === 'pause') {
 			setSeconds(parseInt(seconds) - 1);
 			setStretchState('play');
-		} else {
+		} else if (stretchState === 'close') {
 			appDispatch({ type: 'finishStretch' });
 			props.history.push('/');
+		} else {
+			setStretchState('pause');
 		}
 	};
 
@@ -62,7 +64,7 @@ const Stretching = (props) => {
 				<h2>30초만 스트레칭</h2>
 
 				<CountdownCircleTimer
-					isPlaying
+					isPlaying={stretchState !== 'pause'}
 					duration={30}
 					colors={[['#FFFFFF', 0.33]]}
 					size={260}
