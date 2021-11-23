@@ -1,14 +1,21 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable default-case */
-import React, { useEffect, useReducer, useContext } from 'react';
+import React, {
+	useEffect,
+	useReducer,
+	useContext,
+	useState,
+	useRef,
+} from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { useImmerReducer } from 'use-immer';
-
 import StateContext from './StateContext';
 import DispatchContext from './DispatchContext';
 
+import { myFirebaseApp, myFirebaseDB } from './firebase/fireDB';
 import { firebaseApp, vapidKey } from './firebase/firebaseConfig';
 import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, onValue } from 'firebase/database';
 import { onMessage, getMessaging, getToken } from 'firebase/messaging';
 
 import Loading from './components/Loading/Loading';
@@ -18,35 +25,11 @@ import Stretching from './components/Stretching/Stretching';
 import { getPermission } from './common/getPermission';
 
 function App() {
-	const initialState = {
-		isTurtle: false,
-		detectedCount: JSON.parse(localStorage.getItem('detectedCount'))
-			? JSON.parse(localStorage.getItem('detectedCount'))
-			: 0,
-	};
-
-	function ourReducer(draft, action) {
-		switch (action.type) {
-			case 'detectTurtle':
-				draft.isTurtle = true;
-				localStorage.setItem(
-					'detectedCount',
-					JSON.stringify((draft.detectedCount += 1)),
-				);
-				console.log('reducer:', draft.isTurtle);
-				break;
-			case 'finishStretch':
-				draft.isTurtle = false;
-				console.log('is finished?:', draft.isTurtle);
-				break;
-		}
-	}
-	const [state, dispatch] = useImmerReducer(ourReducer, initialState);
+	// Firebase
+	const app = myFirebaseApp();
 
 	const useFirebaseMessage = () => {
-		initializeApp(firebaseApp);
 		const messaging = getMessaging();
-
 		// 토큰 확인
 		getToken(messaging, {
 			vapidKey: vapidKey,
@@ -67,15 +50,114 @@ function App() {
 		// backgroundMessage는 sw 에서 처리합니다.
 		onMessage(messaging, (payload) => {
 			console.log('Message received. ', payload);
-
 			const title = payload.notification.title;
 			const options = {
 				body: payload.notification.body,
 			};
 
 			dispatch({ type: 'detectTurtle' });
+			window.location.href = '/stretching';
 		});
 	};
+
+	// to adapt DB Date format
+	function formatLeftZero(value) {
+		if (value >= 10) {
+			return value;
+		}
+		return `0${value}`;
+	}
+	function toStringByFormatting(source, delimiter = '-') {
+		const year = source.getFullYear();
+		const month = formatLeftZero(source.getMonth() + 1);
+		const day = formatLeftZero(source.getDate());
+		return [year, month, day].join(delimiter);
+	}
+
+	const database = getDatabase(app);
+	const starCountRef = ref(database);
+
+	let getDB = '';
+	onValue(starCountRef, (snapshot) => {
+		getDB = snapshot.val();
+		console.log('test APP DGB', getDB);
+	});
+
+	// CONTEXT API
+	const initialState = {
+		// TODO : 임시로 userName 처리 해둠
+		userName: 'kangho',
+		todayDate: new Date(),
+		isModalClose: true,
+		isTurtle: false,
+		todayCount: 0,
+		compareCount: 0,
+		// countList: [],
+	};
+
+	function ourReducer(draft, action) {
+		const date = toStringByFormatting(draft.todayDate);
+
+		switch (action.type) {
+			// case 'getCountList':
+			// 	draft.countList = getDB.count[draft.userName];
+			// 	console.log('@@@', draft.countList);
+			// 	break;
+
+			case 'handleDate':
+				draft.todayDate = action.todayDate;
+				break;
+
+			case 'getCompareCount':
+				const yesterday = toStringByFormatting(
+					new Date(
+						new Date(draft.todayDate).setDate(
+							new Date(draft.todayDate).getDate() - 1,
+						),
+					),
+				);
+
+				draft.compareCount =
+					getDB.count[draft.userName][date] &&
+					getDB.count[draft.userName][yesterday]
+						? getDB.count[draft.userName][date].count -
+						  getDB.count[draft.userName][yesterday].count
+						: 0;
+				break;
+
+			case 'getTodayCount':
+				draft.todayCount = getDB.count[draft.userName][date]
+					? getDB.count[draft.userName][date].count
+					: 0;
+				break;
+
+			case 'closeModal':
+				draft.isModalClose = true;
+				console.log('close', draft.isModalClose);
+				break;
+
+			case 'openModal':
+				draft.isModalClose = false;
+				console.log('open', draft.isModalClose);
+				break;
+
+			case 'detectTurtle':
+				draft.isTurtle = true;
+				// TODO : 메세지 받았을 때 재처리
+				// onValue(starCountRef, (snapshot) => {
+				// 	getDB = snapshot.val();
+				// 	return getDB;
+				// });
+				break;
+
+			case 'finishStretch':
+				draft.isTurtle = false;
+				console.log('is finished?:', draft.isTurtle);
+				break;
+		}
+	}
+
+	const [state, dispatch] = useImmerReducer(ourReducer, initialState);
 
 	useEffect(() => {
 		getPermission();
@@ -88,9 +170,6 @@ function App() {
 				<BrowserRouter>
 					<Switch>
 						<Route path="/" exact>
-							<Loading />
-						</Route>
-						<Route path="/home" exact>
 							<DashBoard />
 						</Route>
 						<Route path="/detect" exact>

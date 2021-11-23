@@ -13,49 +13,69 @@ const Stretching = (props) => {
 	const appState = useContext(StateContext);
 	const appDispatch = useContext(DispatchContext);
 
-	const [stretchState, setStretchState] = useState('start');
+	const [stretchState, setStretchState] = useState('stop');
 
-	const buttonUI = () => {
-		if (stretchState === 'start') {
-			return 'start';
-		} else if (stretchState === 'stop') {
+	const buttonUI = (props) => {
+		if (stretchState === 'stop') {
 			return 'stop';
-		} else {
+		} else if (stretchState === 'stop') {
 			return 'close';
+		} else {
+			return 'play';
 		}
 	};
 
-	const handleStretchButton = () => {
-		if (stretchState === 'start') {
-			setStretchState('stop');
-		} else if (stretchState === 'stop') {
-			setStretchState('close');
-		} else {
-			appDispatch({ type: 'finishStretch' });
-		}
-	};
+	const [seconds, setSeconds] = useState(30);
 
 	useEffect(() => {
-		if (!appState.isTurtle) {
-			props.history.push('/home');
+		let countdown = setInterval(() => {
+			if (parseInt(seconds) > 0) {
+				setSeconds(parseInt(seconds) - 1);
+			} else {
+				appDispatch({ type: 'finishStretch' });
+				props.history.push('/');
+			}
+		}, 1000);
+
+		if (stretchState === 'pause') {
+			clearInterval(countdown);
 		}
-	}, [appState.isTurtle]);
+		return () => clearInterval(countdown);
+	}, [seconds]);
+
+	const handleStretchButton = () => {
+		if (stretchState === 'stop') {
+			setStretchState('pause');
+		} else if (stretchState === 'pause') {
+			setSeconds(parseInt(seconds) - 1);
+			setStretchState('play');
+		} else {
+			appDispatch({ type: 'finishStretch' });
+			props.history.push('/');
+		}
+	};
 
 	return (
 		<div className="stretching-page">
 			<>
 				<h2>30초만 스트레칭</h2>
 				<div className="count-circle">
-					<p className="count-number"> 30 : 00 </p>
+					<p className="count-number"> {seconds} </p>
 				</div>
 
-				<div
-					className="stretching__button"
-					onClick={() => {
-						handleStretchButton();
-					}}
-				>
-					{buttonUI()}
+				<div>
+					<p
+						className="stretching__button"
+						onClick={() => handleStretchButton()}
+					>
+						{buttonUI()}
+					</p>
+					<p
+						className="stretching__button"
+						onClick={() => props.history.push('/')}
+					>
+						close
+					</p>
 				</div>
 			</>
 		</div>

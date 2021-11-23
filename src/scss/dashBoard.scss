@@ -80,6 +80,10 @@ html {
 	// 	#root{
 	// 	margin: 80px;
 	// }
+	.date-group {
+		display: flex;
+		align-items: center;
+	}
 
 	.DashBoard {
 		margin: 80px;
@@ -94,8 +98,7 @@ html {
 		position: relative;
 		height: 100vh;
 		width: 50vw;
-	  padding-left: 9%;
-
+		padding-left: 9%;
 	}
 
 	.pc__table--right {
@@ -110,23 +113,29 @@ html {
 		font-weight: bold;
 		font-size: 38px;
 		line-height: 19px;
-		p {
-			display: block;
-		}
-		&__title{
+		// p {
+		// 	display: block;
+		// }
+		&__title {
+			display: inline-block;
 			font-weight: normal;
 			font-size: 50px;
 			line-height: 58px;
 			color: #454545;
 			text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-
+		}
+		&__calendar {
+			width: 40px;
+			height: 40px;
+			margin-left: 20px;
+			filter: contrast(0.5);
 		}
 		&__subtitle {
 			font-weight: normal;
 			font-size: 30px;
-			line-height: 58px;
 			color: #676767;
 			text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+			cursor: pointer;
 		}
 	}
 
@@ -199,6 +208,7 @@ html {
 			line-height: 0;
 			text-align: center;
 			color: #616161;
+			display: inline-block;
 		}
 
 		&__content {
