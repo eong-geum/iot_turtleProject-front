@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { withRouter } from 'react-router-dom';
+import { CountdownCircleTimer } from 'react-countdown-circle-timer';
 
 import StateContext from '../../StateContext';
 import DispatchContext from '../../DispatchContext';
@@ -59,9 +60,15 @@ const Stretching = (props) => {
 		<div className="stretching-page">
 			<>
 				<h2>30초만 스트레칭</h2>
-				<div className="count-circle">
+
+				<CountdownCircleTimer
+					isPlaying
+					duration={30}
+					colors={[['#FFFFFF', 0.33]]}
+					size={260}
+				>
 					<p className="count-number"> {seconds} </p>
-				</div>
+				</CountdownCircleTimer>
 
 				<div>
 					<p
